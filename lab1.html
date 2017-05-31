@@ -1,0 +1,82 @@
+<code>
+
+#----------------------------------------------------------------
+# Program lab_1.s - Asemblery Laboratorium IS II rok
+#----------------------------------------------------------------
+#
+#  To compile: as -o lab_1.o lab_1.s
+#  To link:    ld -o lab_1 lab_1.o
+#  To run:     ./lab_1
+#
+#----------------------------------------------------------------
+
+	.equ	write_64, 1	# write data to file function (64bit)
+	.equ	exit_64, 60	# exit program function (64bit)
+	.equ	stdout, 0x01	# handle to stdout
+
+	.data
+	
+starttxt:			# first message
+	.ascii	"Start\n"
+endtxt:				# second message
+	.ascii	"Finish\n"
+arg1:				# first argument
+	.byte		1	# rezerwacja 1 bajta (MOVB)
+arg2:				# second argument 
+	.word		2	# rezerwacja 2 bajtów (MOVW)
+arg3:				# third argument
+	.long		3	# rezerwacja 4 bajtów (MOVL)
+result:				# result
+	.long		0	
+
+	.equ	startlen, endtxt - starttxt
+	.equ	endlen, arg1 - endtxt
+ 
+	.text
+	.global _start
+	
+_start:
+	MOV	$write_64,%rax	# funkcja
+	MOVQ	$stdout,%rdi	#1 parametr gdzie
+	MOV	$starttxt,%rsi	#2 parametr co 
+	MOVQ	$startlen,%rdx	#3 parametr jak długie
+	SYSCALL
+
+	NOP
+  
+	XOR 	%eax, %eax
+	XOR 	%ebx, %ebx
+	MOVB	arg1,%al
+	MOVW	arg2,%bx
+	MOVL	arg3,%ecx
+	ADD	%ebx,%eax	# ADD %1 argument %przeznaczenie + 2 argument 
+	SUB	%ecx,%eax	#odejmowanie %eax = %eax - %ecx
+	MOVL	%eax,result
+
+	NOP
+
+ 	  # DELETE 
+	#MOV	$0x04,%eax	# funkcja
+	#MOV	$1,%ebx	#1 parametr gdzie
+	#MOV	$result,%ecx	#2 parametr co 
+	#MOV	$64,%rdx	#3 parametr jak długie
+	#INT	$0x80
+	
+	#SYSCALL
+
+	#NOP
+	  # END
+	
+	MOV	$write_64,%rax
+	MOVQ	$stdout,%rdi
+	MOV	$endtxt,%rsi
+	MOVQ	$endlen,%rdx
+	SYSCALL
+
+	NOP
+
+theend:
+	MOV	$exit_64,%rax
+	SYSCALL
+
+</code>
