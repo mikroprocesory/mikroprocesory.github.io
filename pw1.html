@@ -1,4 +1,3 @@
-
 <header>
     <nav>
       <ul>
@@ -9,11 +8,11 @@
         <li><a href="lab5.html">lab5 - zamiana liter małych na duże i odwrotnie </a></li>
 
         <li><a href="lab6a.html">lab6a - silnia </a></li>
-		<li><a href="lab6b.html">lab6b - fibonaci </a></li>
+    <li><a href="lab6b.html">lab6b - fibonaci </a></li>
 
-		<li><a href="lab7a.html">lab7a - silnia nie rekurencyjnie </a></li>
-		<li><a href="lab7b.html">lab7b - fib nie rekurencyjnie </a></li>
-		<li><a href="lab7d.html">lab7d - budowanie stringa </a></li>
+    <li><a href="lab7a.html">lab7a - silnia nie rekurencyjnie </a></li>
+    <li><a href="lab7b.html">lab7b - fib nie rekurencyjnie </a></li>
+    <li><a href="lab7d.html">lab7d - budowanie stringa </a></li>
 
         <li><a href="lab8a.html">lab8a - wyświetlanie zmiennych środowiskowych</a></li>
 
@@ -25,7 +24,7 @@
         <li><a href="jk2.html">jk2 - generuj string generate_str(char* s, int c, int n, int inc) </a></li>
         <li><a href="jk3.html">jk3 - łączenie stringów w jeden char* fun(char* buf, char* a, char* b)</a></li>
         <li><a href="jk4.html">jk4 - max index max_ind(int a, int b, int c, int d)</a></li>
-		<li><a href="jk5.html">jk5 - (poprawkowy) dziwny max na longach max_1_ind(long long *tab, long long n, long long *even_count, long long *neg_count)</a></li>
+    <li><a href="jk5.html">jk5 - (poprawkowy) dziwny max na longach max_1_ind(long long *tab, long long n, long long *even_count, long long *neg_count)</a></li>
 
 
 
@@ -34,7 +33,7 @@
         <li><a href="ds2.html">ds2 - generuj string generate_str(char* s, int c, int n, int inc) </a></li>
         <li><a href="ds3.html">ds3 - łączenie stringów w jeden char* fun(char* buf, char* a, char* b)</a></li>
         <li><a href="ds4.html">ds4 - max index max_ind(int a, int b, int c, int d)</a></li>
-		<li><a href="ds5.html">ds5 - (poprawkowy) dziwny max na longach max_1_ind(long long *tab, long long n, long long *even_count, long long *neg_count)</a></li>
+    <li><a href="ds5.html">ds5 - (poprawkowy) dziwny max na longach max_1_ind(long long *tab, long long n, long long *even_count, long long *neg_count)</a></li>
 
 
 
@@ -47,32 +46,51 @@
 # Funkcja do programu lab_6a - Asemblery Laboratorium IS II rok
 #----------------------------------------------------------------
 
-	.text
-	.type facta, @function
-	.globl facta	
+# %rdi %rsi % rdx %rcx %r8 %r9
+# %rax result
 
-	
-#przekazywanie parametrów kolejno do : rdi rsi rdx rcx r8 r9
-#zwracana wartość w rejestrze : x64: rax  x128: %rdx, %rax
-#funkcja nie może zmienić %rbp r10-15
-
-facta:	mov $1, %rax
-
-	cmp %rax, %rdi
-	jbe f_e
-
-	push %rdi
-
-	dec %rdi
-	call facta
-
-	pop %rdi
-
-	mul %rdi
-
-f_e:	ret
+  .text
+	.type max_diff, @function
+	.globl max_diff
 
 
+max_diff:
+  # init max = a
+  movq %rdi, %rax # max
+
+  cmp %rax, %rsi
+  jl  max_c
+  movq %rsi, %rax
+max_c:
+  cmp %rax, %rdx
+  jl  max_d
+  movq %rdx, %rax
+max_d:
+  cmp %rax, %rcx
+  jl check_min
+  movq %rcx, %rax
+
+check_min:
+  push %rax
+  mov %rdi, %rax
+
+  cmp %rax, %rsi
+  jg  min_c
+  movq %rsi, %rax
+min_c:
+  cmp %rax, %rdx
+  jg  min_d
+  movq %rdx, %rax
+min_d:
+  cmp %rax, %rcx
+  jg return
+  movq %rcx, %rax
+
+return:
+  pop %r12
+  sub %rax, %r12
+  movq %r12, %rax
+  ret
 
 
 
@@ -81,8 +99,20 @@ f_e:	ret
 
 
 
-----------------------------C---------------------------------
-//---------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+  ----------------------------------------_C_--------------------------------
+
+
+
+  //---------------------------------------------------------------
 // Program lab_6a - Asemblery Laboratorium IS II rok
 //
 // To compile&link: gcc -o lab_6a lab_6a.c lab_6a_asm.s
@@ -92,21 +122,30 @@ f_e:	ret
 
 #include <stdio.h>
 
-long long factc( unsigned int k )
-{
-	if( k <= 1 )
-		return 1;
-	else
-		return k * factc( k - 1 );
+long max_diff_c (long a, long b, long c, long d){
+  long max = a,min = a;
+  if ( b > max ) max = b;
+  if (c > max ) max = c;
+  if (d > max ) max = d;
+
+  if (b < min) min = b;
+  if (c < min) min = c;
+  if (d < min) min = d;
+
+  return max - min;
 }
 
-long long facta( unsigned int k );
+long max_diff(long a, long b, long c, long d);
 
-void main( void )
-{
- int i;
+void tester (long a, long b, long c, long d){
+   printf( "%ld :: %ld \n", max_diff_c(a,b,c,d), max_diff(a,b,c,d));
+}
 
- for( i = 1; i <= 30; i++ )
-   printf( "FactC(%3d) = %30ld FactA = %30ld\n", i, factc(i), facta(i) );
+
+void main( void ) {
+  tester(1,2,3,4);
+  tester(4,1,3,2);
+  tester(5,-2,3,9);
+  tester(-1,-2,4,10);
 }
 </textarea>

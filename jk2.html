@@ -1,4 +1,3 @@
-
 <header>
     <nav>
       <ul>
@@ -43,70 +42,59 @@
 </header>
 
 <textarea style="width:2000px; height:10000px;" >
-#----------------------------------------------------------------
-# Funkcja do programu lab_6a - Asemblery Laboratorium IS II rok
-#----------------------------------------------------------------
+# char* generate_str(char* s, int c, int n, int inc);
 
+#nagłówki jak zawsze
 	.text
-	.type facta, @function
-	.globl facta	
-
+	.type generate_str, @function
+	.globl generate_str
 	
-#przekazywanie parametrów kolejno do : rdi rsi rdx rcx r8 r9
-#zwracana wartość w rejestrze : x64: rax  x128: %rdx, %rax
-#funkcja nie może zmienić %rbp r10-15
-
-facta:	mov $1, %rax
-
-	cmp %rax, %rdi
-	jbe f_e
-
-	push %rdi
-
-	dec %rdi
-	call facta
-
-	pop %rdi
-
-	mul %rdi
-
-f_e:	ret
-
+generate_str:
+	push %rdi #funkcja ma w zasadzie zwracać to samo, co podajemy jej jako pierwszy argument. ponieważ będziemy zwiększać ten wskaźnik który jest pierwszym argumentem, to najpierw wrzucamy sobie to na stos aby potem łatwo odzyskać jego pierwotną wartość
+	
+begin:
+	mov %rsi,(%rdi) #kopiujemy drugi argument do MIEJSCA W PAMIĘCI wskazywanego przez rdi. nawiasy to takie jakby wyłuskanie zmiennej ze wskaźnika. np w C, jeśli mamy int* a, to napiszemy *a = 5
+	inc %rdi #zwiększamy wskaźnik tak, aby wskazywał na kolejny element
+	dec %rdx #zmniejszamy licznik
+	cmp $0,%rcx #sprawdzamy czy mamy wyświetlać takie same znaki, czy zwiększać je o 1
+	je next
+	inc %rsi #zwiększamy o jeden znak z którego budujemy napis
+	
+next:
+	cmp $0,%rdx #sprawdzamy czy licznik jest jeszcze większy od 0, jeśli tak to skaczemy z powrotem do begin
+	jg begin
+	movb $0,(%rdi) #kopiujemy na koniec jeszcze jeden bajt do naszego napisu, bajt ma wartość 0. to oczywiście nullterminator, bez którego nie będzie wiadomo gdzie się skończył nasz napis
+	
+	pop %rax #zwracamy wartość przez rax, chcemy zwrócić wskaźnik do naszego napisu. na początku wrzuciliśmy go na stos, więc teraz zdejmujemy
+	ret
 
 
 
 
 
+------------------------------___C_-------------------------
 
 
 
-
-----------------------------C---------------------------------
-//---------------------------------------------------------------
-// Program lab_6a - Asemblery Laboratorium IS II rok
-//
-// To compile&link: gcc -o lab_6a lab_6a.c lab_6a_asm.s
-// To run:          ./lab_6a
-//
-//---------------------------------------------------------------
-
+#include <stdlib.h>
 #include <stdio.h>
 
-long long factc( unsigned int k )
-{
-	if( k <= 1 )
-		return 1;
-	else
-		return k * factc( k - 1 );
+#define BUFSIZE 100
+
+char* generate_str(char* s, int c, int n, int inc);
+
+int main(){
+	char* buf = malloc(BUFSIZE*sizeof(char));
+	
+	printf("%s \n", generate_str(buf, 65, 15, 0));
+	
+	free(buf);
+
+	return 0;
 }
 
-long long facta( unsigned int k );
 
-void main( void )
-{
- int i;
 
- for( i = 1; i <= 30; i++ )
-   printf( "FactC(%3d) = %30ld FactA = %30ld\n", i, factc(i), facta(i) );
-}
-</textarea>
+
+
+	</textarea>

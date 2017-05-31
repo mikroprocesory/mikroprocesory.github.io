@@ -1,3 +1,45 @@
+<header>
+    <nav>
+      <ul>
+        <li><a href="lab1.html">lab1 - wyświetlanie </a></li>
+        <li><a href="lab2.html">lab2 - wyświetlanie w 16-tkowym</a></li>
+        <li><a href="lab3.html">lab3 - sortowanie tablicy int</a></li>
+        <li><a href="lab4.html">lab4 - brak </a></li>
+        <li><a href="lab5.html">lab5 - zamiana liter małych na duże i odwrotnie </a></li>
+
+        <li><a href="lab6a.html">lab6a - silnia </a></li>
+		<li><a href="lab6b.html">lab6b - fibonaci </a></li>
+
+		<li><a href="lab7a.html">lab7a - silnia nie rekurencyjnie </a></li>
+		<li><a href="lab7b.html">lab7b - fib nie rekurencyjnie </a></li>
+		<li><a href="lab7d.html">lab7d - budowanie stringa </a></li>
+
+        <li><a href="lab8a.html">lab8a - wyświetlanie zmiennych środowiskowych</a></li>
+
+
+        <li><a href="lab9a.html">lab9a - operacje na zmiennoprzecinkowych </a></li>
+        <li><a href="lab9b.html">lab9b - pierwiastki równania kwadratowego </a></li>
+
+        <li><a href="jk1.html">jk1 - maksymalna różnica max_diff(ina, int b, int c, int d) </a></li>
+        <li><a href="jk2.html">jk2 - generuj string generate_str(char* s, int c, int n, int inc) </a></li>
+        <li><a href="jk3.html">jk3 - łączenie stringów w jeden char* fun(char* buf, char* a, char* b)</a></li>
+        <li><a href="jk4.html">jk4 - max index max_ind(int a, int b, int c, int d)</a></li>
+		<li><a href="jk5.html">jk5 - (poprawkowy) dziwny max na longach max_1_ind(long long *tab, long long n, long long *even_count, long long *neg_count)</a></li>
+
+
+
+
+        <li><a href="pw1.html">pw1 - maksymalna różnica max_diff(ina, int b, int c, int d) </a></li>
+        <li><a href="ds2.html">ds2 - generuj string generate_str(char* s, int c, int n, int inc) </a></li>
+        <li><a href="ds3.html">ds3 - łączenie stringów w jeden char* fun(char* buf, char* a, char* b)</a></li>
+        <li><a href="ds4.html">ds4 - max index max_ind(int a, int b, int c, int d)</a></li>
+		<li><a href="ds5.html">ds5 - (poprawkowy) dziwny max na longach max_1_ind(long long *tab, long long n, long long *even_count, long long *neg_count)</a></li>
+
+
+
+      </ul>
+    </nav>
+</header>
 <textarea style="width:2000px; height:10000px;" >
 #----------------------------------------------------------------
 # Funkcja do programu lab_7b - Asemblery Laboratorium IS II rok
@@ -35,6 +77,53 @@ f_0:
 f_1:
 	mov %rcx, %rax
 	jmp f_e
+
+
+
+
+	_---------------------------------C_------------------------------------
+
+	//---------------------------------------------------------------
+// Program lab_7b - Asemblery Laboratorium IS II rok
+//
+// To compile&link: gcc -o lab_7b lab_7b.c lab_7b_asm.s
+// To run:          ./lab_7b
+//
+//---------------------------------------------------------------
+
+#include <stdio.h>
+
+long long fibc( unsigned int k )
+{
+	long long fold = 0;
+	long long fnew = 1;
+	long long sum;
+
+	if( k == 0 ) return fold;
+	else if( k == 1 ) return fnew;
+	else
+	{
+		do {
+			sum = fold + fnew;
+			fold = fnew;
+			fnew =  sum;
+			k--;
+		}
+		while( k > 1 );
+		return sum;
+	}
+}
+
+long long fiba( unsigned int k );
+
+
+void main( void )
+{
+ int i;
+
+ for( i = 0; i <= 96; i++ )
+   printf( "Fib( %3d) = %20ld     FibA= %20ld\n", i, fibc( i ), fiba( i ) );
+}
 
 
 	</textarea>

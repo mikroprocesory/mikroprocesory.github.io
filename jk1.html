@@ -1,0 +1,115 @@
+<header>
+    <nav>
+      <ul>
+        <li><a href="lab1.html">lab1 - wyświetlanie </a></li>
+        <li><a href="lab2.html">lab2 - wyświetlanie w 16-tkowym</a></li>
+        <li><a href="lab3.html">lab3 - sortowanie tablicy int</a></li>
+        <li><a href="lab4.html">lab4 - brak </a></li>
+        <li><a href="lab5.html">lab5 - zamiana liter małych na duże i odwrotnie </a></li>
+
+        <li><a href="lab6a.html">lab6a - silnia </a></li>
+		<li><a href="lab6b.html">lab6b - fibonaci </a></li>
+
+		<li><a href="lab7a.html">lab7a - silnia nie rekurencyjnie </a></li>
+		<li><a href="lab7b.html">lab7b - fib nie rekurencyjnie </a></li>
+		<li><a href="lab7d.html">lab7d - budowanie stringa </a></li>
+
+        <li><a href="lab8a.html">lab8a - wyświetlanie zmiennych środowiskowych</a></li>
+
+
+        <li><a href="lab9a.html">lab9a - operacje na zmiennoprzecinkowych </a></li>
+        <li><a href="lab9b.html">lab9b - pierwiastki równania kwadratowego </a></li>
+
+        <li><a href="jk1.html">jk1 - maksymalna różnica max_diff(ina, int b, int c, int d) </a></li>
+        <li><a href="jk2.html">jk2 - generuj string generate_str(char* s, int c, int n, int inc) </a></li>
+        <li><a href="jk3.html">jk3 - łączenie stringów w jeden char* fun(char* buf, char* a, char* b)</a></li>
+        <li><a href="jk4.html">jk4 - max index max_ind(int a, int b, int c, int d)</a></li>
+		<li><a href="jk5.html">jk5 - (poprawkowy) dziwny max na longach max_1_ind(long long *tab, long long n, long long *even_count, long long *neg_count)</a></li>
+
+
+
+
+        <li><a href="pw1.html">pw1 - maksymalna różnica max_diff(ina, int b, int c, int d) </a></li>
+        <li><a href="ds2.html">ds2 - generuj string generate_str(char* s, int c, int n, int inc) </a></li>
+        <li><a href="ds3.html">ds3 - łączenie stringów w jeden char* fun(char* buf, char* a, char* b)</a></li>
+        <li><a href="ds4.html">ds4 - max index max_ind(int a, int b, int c, int d)</a></li>
+		<li><a href="ds5.html">ds5 - (poprawkowy) dziwny max na longach max_1_ind(long long *tab, long long n, long long *even_count, long long *neg_count)</a></li>
+
+
+
+      </ul>
+    </nav>
+</header>
+
+<textarea style="width:2000px; height:10000px;" >
+
+#argumenty funkcji w programach 64-bitowych wrzucane są kolejno do rejestrów: RDI, RSI, RDX, RCX, R8, R9 - gdyby ich było więcej to poszłyby na stos, ale na kolokwium tak się raczej nie zdarzy
+
+# long max_diff(long a, long b, long c, long d);
+#nagłówki takie jak zawsze
+	.text
+	.type max_diff, @function
+	.globl max_diff
+	
+max_diff: #tu sie zaczyna nasza funkcja, najpierw zamierzam wyznaczyć największy argument i wrzucić go do rejestru rax
+	push %rdi #wrzucam na stos rdi, ponieważ zamierzam przenosić do tego rejestru różne wartości, a nie chcemy zgubić wartości pierwszego argumentu
+	
+	cmp %rdi,%rsi #sprawdzam jak się ma pierwszy argument do drugiego
+	jle compare2  #gdyby to było C, to napisałbym if(rsi > rdi) mov(rsi,rdi), ale tutaj chcemy OMINĄĆ mov jeśli zajdzie warunek, czyli musimy wpisać warunek odwrotny, czyli zamiast > piszemy <=, właśnie to znaczy jle: jump if less or equal (TYLKO DLA ZMIENNYCH ZE ZNAKIEM, UNSIGNED INACZEJ!)
+	mov %rsi,%rdi #przenosimy...
+compare2:
+	cmp %rdi,%rdx #jak wyżej, tylko sprawdzamy dla trzeciego argumentu
+	jle compare3
+	mov %rdx,%rdi
+compare3:
+	cmp %rdi,%rcx #jak wyżej, tylko sprawdzamy dla czwartego argumentu
+	jle cmpmin
+	mov %rcx,%rdi
+	
+cmpmin:
+	mov %rdi,%rax #kopiuję wartość największego argumentu do rax, przyda nam się później
+	pop %rdi #zdejmuję wartość ze stosu i umieszczam ją w rdi, ostatnią rzeczą jaka znalazła się na stosie była wartość pierwszego argumentu i właśnie ją dostajemy. dzięki temu w rdi znowu mamy pierwszy argument, tak jak na początku funkcji
+	
+	cmp %rdi,%rsi #tutaj wszystko tak jak wyżej, tylko szukamy najmniejszego argumentu, czyli nie używamy jle tylko jge (jump if greater or equal)
+	jge compare4
+	mov %rsi,%rdi
+compare4:
+	cmp %rdi,%rdx
+	jge compare5
+	mov %rdx,%rdi
+compare5:
+	cmp %rdi,%rcx
+	jge result
+	mov %rcx,%rdi
+	
+result:
+	sub %rdi,%rax #odejmuję od wartości w rax wartość w rdi i umieszczam ją z powrotem w rax, czyli inaczej: rax=rax-rdi. czemu rax? bo przez ten rejestr zwracamy wartość
+	ret #powrót z funkcji
+
+
+
+
+
+
+
+
+
+
+
+
+	----------------------------__C_------------------------
+
+
+
+	#include <stdlib.h>
+#include <stdio.h>
+
+long max_diff(long a, long b, long c, long d);
+
+int main(){
+	printf("%ld \n", max_diff(5, -2, 8, 3));
+	
+	return 0;
+}
+
+	</textarea>

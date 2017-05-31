@@ -1,4 +1,3 @@
-
 <header>
     <nav>
       <ul>
@@ -42,71 +41,57 @@
     </nav>
 </header>
 
-<textarea style="width:2000px; height:10000px;" >
-#----------------------------------------------------------------
-# Funkcja do programu lab_6a - Asemblery Laboratorium IS II rok
-#----------------------------------------------------------------
+<textarea style="width:2000px; height:10000px;" >	.text
+	.type gsA @function
+	.global gsA
 
-	.text
-	.type facta, @function
-	.globl facta	
+
+# buf  'a'   n  inc
+#%rdi %rsi %rdx %rcx
+
+gsA:	
+	mov %rdi, %rax
+
 
 	
-#przekazywanie parametrów kolejno do : rdi rsi rdx rcx r8 r9
-#zwracana wartość w rejestrze : x64: rax  x128: %rdx, %rax
-#funkcja nie może zmienić %rbp r10-15
-
-facta:	mov $1, %rax
-
-	cmp %rax, %rdi
-	jbe f_e
-
-	push %rdi
-
-	dec %rdi
-	call facta
-
-	pop %rdi
-
-	mul %rdi
-
-f_e:	ret
+next:	
+	cmp $0, %rdx
+	jbe end
+	
+	movb %sil, (%rdi) # 8 bitow
+	inc %rdi 
+	add %cl, %sil
+	dec %rdx
+	
+	jmp next
+	
+end:
+	movb $0, (%rdi)
+	# mov %rdi, %rax
+	ret
 
 
 
+---------------------___C----------------
 
 
 
-
-
-
-
-----------------------------C---------------------------------
-//---------------------------------------------------------------
-// Program lab_6a - Asemblery Laboratorium IS II rok
-//
-// To compile&link: gcc -o lab_6a lab_6a.c lab_6a_asm.s
-// To run:          ./lab_6a
-//
-//---------------------------------------------------------------
 
 #include <stdio.h>
 
-long long factc( unsigned int k )
-{
-	if( k <= 1 )
-		return 1;
-	else
-		return k * factc( k - 1 );
+char* gsA(char * s, int c, int n, int inc);
+
+
+
+int main(void){
+	int n=7;
+	char s2[100];
+
+	printf("gsA: %s | %s\n", gsA(s2, 'a', n, 0), s2);
+
 }
 
-long long facta( unsigned int k );
 
-void main( void )
-{
- int i;
 
- for( i = 1; i <= 30; i++ )
-   printf( "FactC(%3d) = %30ld FactA = %30ld\n", i, factc(i), facta(i) );
-}
+
 </textarea>

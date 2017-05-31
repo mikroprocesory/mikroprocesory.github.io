@@ -1,4 +1,3 @@
-
 <header>
     <nav>
       <ul>
@@ -41,34 +40,22 @@
       </ul>
     </nav>
 </header>
-
 <textarea style="width:2000px; height:10000px;" >
-#----------------------------------------------------------------
-# Funkcja do programu lab_6a - Asemblery Laboratorium IS II rok
+	#----------------------------------------------------------------
+# Funkcja do programu lab_7a - Asemblery Laboratorium IS II rok
 #----------------------------------------------------------------
 
 	.text
 	.type facta, @function
 	.globl facta	
 
-	
-#przekazywanie parametrów kolejno do : rdi rsi rdx rcx r8 r9
-#zwracana wartość w rejestrze : x64: rax  x128: %rdx, %rax
-#funkcja nie może zmienić %rbp r10-15
-
 facta:	mov $1, %rax
 
-	cmp %rax, %rdi
+next:	cmp $1, %rdi
 	jbe f_e
-
-	push %rdi
-
-	dec %rdi
-	call facta
-
-	pop %rdi
-
 	mul %rdi
+	dec %rdi
+	jmp next
 
 f_e:	ret
 
@@ -81,32 +68,46 @@ f_e:	ret
 
 
 
-----------------------------C---------------------------------
-//---------------------------------------------------------------
-// Program lab_6a - Asemblery Laboratorium IS II rok
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------__C_---------------------------------
+
+
+	//---------------------------------------------------------------
+// Program lab_7a - Asemblery Laboratorium IS II rok
 //
-// To compile&link: gcc -o lab_6a lab_6a.c lab_6a_asm.s
-// To run:          ./lab_6a
+// To compile&link: gcc -o lab_7a lab_7a.c lab_7a_asm.s
+// To run:          ./lab_7a
 //
 //---------------------------------------------------------------
 
 #include <stdio.h>
 
-long long factc( unsigned int k )
+long long int factc( unsigned int k )
 {
-	if( k <= 1 )
-		return 1;
-	else
-		return k * factc( k - 1 );
+	long long result = 1;
+	while( k > 1 )
+	   result *= k--;
+	return result;			
 }
 
-long long facta( unsigned int k );
+long long int facta( unsigned int k );
 
 void main( void )
 {
  int i;
 
- for( i = 1; i <= 30; i++ )
-   printf( "FactC(%3d) = %30ld FactA = %30ld\n", i, factc(i), facta(i) );
+ for( i = 1; i <= 20; i++ )
+   printf( "Fact(%d) = %ld FactA = %ld\n", i, factc(i), facta(i) );
 }
 </textarea>

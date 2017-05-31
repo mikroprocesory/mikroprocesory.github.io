@@ -1,4 +1,3 @@
-
 <header>
     <nav>
       <ul>
@@ -43,70 +42,66 @@
 </header>
 
 <textarea style="width:2000px; height:10000px;" >
-#----------------------------------------------------------------
-# Funkcja do programu lab_6a - Asemblery Laboratorium IS II rok
-#----------------------------------------------------------------
+# char* fun(char* buf, char* a, char* b);
 
+#nie do końca zrozumiałem jak ma się zachowywać ta funkcja, jeśli napisy nie są równej długości. w swojej implementacji kopiuję znaki do bufora dotąd, aż w którymkolwiek z napisów źródłowych napotkam nullterminator. zachęcam jednak do zmiany programu tak, aby zaimplementować również inne możliwości.
+
+#nagłówki takie jak zawsze
 	.text
-	.type facta, @function
-	.globl facta	
-
+	.type fun, @function
+	.globl fun
 	
-#przekazywanie parametrów kolejno do : rdi rsi rdx rcx r8 r9
-#zwracana wartość w rejestrze : x64: rax  x128: %rdx, %rax
-#funkcja nie może zmienić %rbp r10-15
-
-facta:	mov $1, %rax
-
-	cmp %rax, %rdi
-	jbe f_e
-
-	push %rdi
-
-	dec %rdi
-	call facta
-
-	pop %rdi
-
-	mul %rdi
-
-f_e:	ret
-
-
-
-
-
+fun:
+	push %rdi #tak jak w poprzednim zadaniu, chcę zachować pierwotną wartość pierwszego argumentu
+	
+begin:
+	cmp $0,(%rsi) #sprawdzam czy w pierwszym napisie źródłowym nie ma jeszcze nullterminatora, jeśli jest do kończę
+	jz end
+	cmp $0,(%rdx) #jak wyżej
+	jz end
+	mov (%rsi),%r8 #nie można kopiować bezpośrednio ze wskaźnika do wskaźnika. najpierw kopiuję sobie do jakiegoś rejestru pomocniczego, a potem z tego rejestru do docelowej pamięci
+	mov %r8,(%rdi)
+	inc %rsi #zwiększam drugi argument aby wskazywało na kolejny znak
+	inc %rdi #bufor też
+	mov (%rdx),%r8 #jak wyżej, tutaj kopiujemy z drugiego napisu do bufora
+	mov %r8,(%rdi)
+	inc %rdx #zwiększamy trzeci argument i bufor
+	inc %rdi
+	jmp begin #wracamy do początku
+	
+end:
+	movb $0,(%rdi) #standardowo na koniec dorzucam nullterminator
+	pop %rax #odzyskuję pierwotną wartość pierwszego argumentu i wkładam ją do rax
+	ret
 
 
 
 
 
-----------------------------C---------------------------------
-//---------------------------------------------------------------
-// Program lab_6a - Asemblery Laboratorium IS II rok
-//
-// To compile&link: gcc -o lab_6a lab_6a.c lab_6a_asm.s
-// To run:          ./lab_6a
-//
-//---------------------------------------------------------------
 
+
+
+---------------------------------------------_______C-_______________-------------------------
+
+
+
+
+
+
+#include <stdlib.h>
 #include <stdio.h>
 
-long long factc( unsigned int k )
-{
-	if( k <= 1 )
-		return 1;
-	else
-		return k * factc( k - 1 );
+#define BUFSIZE 100
+
+char* fun(char* buf, char* a, char* b);
+
+int main(){
+	char* buf = malloc(BUFSIZE*sizeof(char));
+	
+	printf("%s \n", fun(buf, "bb", "ua") );
+	
+	free(buf);
+
+	return 0;
 }
-
-long long facta( unsigned int k );
-
-void main( void )
-{
- int i;
-
- for( i = 1; i <= 30; i++ )
-   printf( "FactC(%3d) = %30ld FactA = %30ld\n", i, factc(i), facta(i) );
-}
-</textarea>
+	</textarea>

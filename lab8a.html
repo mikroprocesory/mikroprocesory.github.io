@@ -1,0 +1,261 @@
+<header>
+    <nav>
+      <ul>
+        <li><a href="lab1.html">lab1 - wyświetlanie </a></li>
+        <li><a href="lab2.html">lab2 - wyświetlanie w 16-tkowym</a></li>
+        <li><a href="lab3.html">lab3 - sortowanie tablicy int</a></li>
+        <li><a href="lab4.html">lab4 - brak </a></li>
+        <li><a href="lab5.html">lab5 - zamiana liter małych na duże i odwrotnie </a></li>
+
+        <li><a href="lab6a.html">lab6a - silnia </a></li>
+		<li><a href="lab6b.html">lab6b - fibonaci </a></li>
+
+		<li><a href="lab7a.html">lab7a - silnia nie rekurencyjnie </a></li>
+		<li><a href="lab7b.html">lab7b - fib nie rekurencyjnie </a></li>
+		<li><a href="lab7d.html">lab7d - budowanie stringa </a></li>
+
+        <li><a href="lab8a.html">lab8a - wyświetlanie zmiennych środowiskowych</a></li>
+
+
+        <li><a href="lab9a.html">lab9a - operacje na zmiennoprzecinkowych </a></li>
+        <li><a href="lab9b.html">lab9b - pierwiastki równania kwadratowego </a></li>
+
+        <li><a href="jk1.html">jk1 - maksymalna różnica max_diff(ina, int b, int c, int d) </a></li>
+        <li><a href="jk2.html">jk2 - generuj string generate_str(char* s, int c, int n, int inc) </a></li>
+        <li><a href="jk3.html">jk3 - łączenie stringów w jeden char* fun(char* buf, char* a, char* b)</a></li>
+        <li><a href="jk4.html">jk4 - max index max_ind(int a, int b, int c, int d)</a></li>
+		<li><a href="jk5.html">jk5 - (poprawkowy) dziwny max na longach max_1_ind(long long *tab, long long n, long long *even_count, long long *neg_count)</a></li>
+
+
+
+
+        <li><a href="pw1.html">pw1 - maksymalna różnica max_diff(ina, int b, int c, int d) </a></li>
+        <li><a href="ds2.html">ds2 - generuj string generate_str(char* s, int c, int n, int inc) </a></li>
+        <li><a href="ds3.html">ds3 - łączenie stringów w jeden char* fun(char* buf, char* a, char* b)</a></li>
+        <li><a href="ds4.html">ds4 - max index max_ind(int a, int b, int c, int d)</a></li>
+		<li><a href="ds5.html">ds5 - (poprawkowy) dziwny max na longach max_1_ind(long long *tab, long long n, long long *even_count, long long *neg_count)</a></li>
+
+
+
+      </ul>
+    </nav>
+</header>
+<textarea style="width:2000px; height:10000px;" >
+#----------------------------------------------------------------
+# Program lab_8.s - Asemblery Laboratorium IS II rok
+#----------------------------------------------------------------
+#
+# To compile:	as -o lab_8.o lab_8.s
+# To link:	ld -dynamic-linker /lib64/ld-linux-x86-64.so.2 -lc -o lab_8 lab_8.o
+# To run:	./lab_8
+#
+#----------------------------------------------------------------
+
+	.data
+argc_s:
+	.asciz "argc = %d\n"
+args_s:
+	.asciz "%s\n"
+sep_s:
+	.asciz "----------------------------\n"
+argc:
+	.quad 0
+argv:
+	.quad 0
+env:
+	.quad 0
+argc_tmp:
+	.quad 0
+
+	.text
+	.global _start
+
+_start:
+
+	mov (%rsp), %rax	# argc is here
+	mov %rax, argc		# store value of argc
+	mov %rax, argc_tmp
+
+	mov $argc_s,%rdi
+	mov argc, %rsi
+	mov $0, %al
+	call printf		# display value of argc
+
+	mov %rsp, %rbx		# use rbx as a pointer
+	add $8, %rbx		# argv[] is here
+	mov %rbx, argv		# store address of argv[]
+
+next_argv:
+
+	mov $args_s, %rdi
+	mov (%rbx), %rsi
+	mov $0, %al
+	call printf		# display value of argv[i]
+
+	add $8,%rbx		# address of argv[i+1]
+
+	decq argc_tmp
+	jnz next_argv
+
+	mov $sep_s, %rdi
+	mov $0, %al
+	call printf		# display separator
+
+	add $8, %rbx		# env[] is here - skip zero/NULL
+	mov %rbx, env		# store address of env[]
+
+next_env:
+	cmp $0,(%rbx)		# is env[i] == NULL
+	je finish		# yes
+
+	mov $args_s, %rdi
+	mov (%rbx), %rsi	# no
+	mov $0, %al
+	call printf		# displays value of env[i]
+
+	add $8,%rbx		# address of env[i+1]
+	jmp next_env
+
+finish:
+	mov $0,%rdi		# this is the end...
+	call exit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	------------------------------------SEC VERSION------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	 
+#----------------------------------------------------------------
+# Program lab_8.s - Asemblery Laboratorium IS II rok
+#----------------------------------------------------------------
+#
+# To compile & link:	gcc -o lab_8x lab_8x.s
+# To run:		./lab_8x
+#
+#----------------------------------------------------------------
+
+	.data
+argc_s:
+	.asciz "argc = %d\n"
+args_s:
+	.asciz "%s\n"
+sep_s:
+	.asciz "----------------------------\n"
+argc:
+	.quad 0
+argv:
+	.quad 0
+env:
+	.quad 0
+argc_tmp:
+	.quad 0
+
+	.text
+	.global main
+
+main:
+#liczba argumrnt  w:            %rfc
+# arg v				%rsi
+
+
+	mov %rdi, argc
+	mov %rdi, argc_tmp
+	mov %rsi, argv
+	mov %rdx, env
+	
+	
+	
+	#mov %rax, argc		# store value of argc
+	#mov %rax, argc_tmp
+
+	mov $argc_s,%rdi
+	mov argc, %rsi
+	mov $0, %al
+	call printf		# display value of argc
+
+	#mov %rsp, %rbx		# use rbx as a pointer
+	#add $8, %rbx		# argv[] is here
+	#mov %rbx, argv		# store address of argv[]
+
+	mov argv, %rbx
+next_argv:
+
+	mov $args_s, %rdi
+	mov (%rbx), %rsi
+	mov $0, %al
+	call printf		# display value of argv[i]
+	#mov env
+	add $8,%rbx		# address of argv[i+1]
+
+	decq argc_tmp
+	jnz next_argv
+
+	mov $sep_s, %rdi
+	mov $0, %al
+	call printf		# display separator
+
+	#add $8, %rbx		# env[] is here - skip zero/NULL
+	#mov %rbx, env		# store address of env[]
+	mov env, %rbx
+next_env:
+	cmp $0,(%rbx)		# is env[i] == NULL
+	je finish		# yes
+
+	mov $args_s, %rdi
+	mov (%rbx), %rsi	# no
+	mov $0, %al
+	call printf		# displays value of env[i]
+
+	add $8,%rbx		# address of env[i+1]
+	jmp next_env
+
+finish:
+	mov $0,%rdi		# this is the end...
+	call exit
+
+</textarea>

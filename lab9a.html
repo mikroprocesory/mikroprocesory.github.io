@@ -1,4 +1,3 @@
-
 <header>
     <nav>
       <ul>
@@ -41,72 +40,84 @@
       </ul>
     </nav>
 </header>
-
 <textarea style="width:2000px; height:10000px;" >
 #----------------------------------------------------------------
-# Funkcja do programu lab_6a - Asemblery Laboratorium IS II rok
+# Program lab_9a.s - Asemblery Laboratorium IS II rok
+#----------------------------------------------------------------
+#
+#   to compile & link:  gcc -lm -o lab_9a lab_9a.s
+#   to run: 		./lab_9a
+#
 #----------------------------------------------------------------
 
-	.text
-	.type facta, @function
-	.globl facta	
+	.data
+i:				# loop counter
+	.long		1
+it:				# TODO
+	.long		1
+x:				# function argument
+	.double		0.0
+y:
+	.double		0.0
+sqr_a:				# function result
+	.double		0.0
+sqr_b:				# function result
+	.double		0.0
+two:				# constant
+	.long		2
+fmt_str:
+	.asciz	"Square root of %lf = %.20lf\n"
 
 	
-#przekazywanie parametrów kolejno do : rdi rsi rdx rcx r8 r9
-#zwracana wartość w rejestrze : x64: rax  x128: %rdx, %rax
-#funkcja nie może zmienić %rbp r10-15
+	
+	# x(k+1)  = 1/2*(xk + a/xk)
+	#sufixy S-short, L-long, 
+	.text
+	.global main
+	
+main:
+	FINIT			# FPU initialization
+next:
+	FILDL	i		# i -> ST(0)
+	FSTPL	x		# ST(0) -> x & pop from stack
+				#------------------------------
+	FLDL	x		# function argument -> ST(0)
+	FSQRT			# sqrt( ST(0) ) -> ST(0)
+	FSTPL	sqr_a		# ST(0) -> sqr_a  & pop from stack
+				#------------------------------
+	FLDL	sqr_a		# load & display first result
+	CALL	disp
+				#------------------------------
+	FLDL	x		# first approximation (a0) -> ST(0)
 
-facta:	mov $1, %rax
+iter:	FLDL	x		# function argument -> ST(0), ak in ST(1)
+	FDIV	%ST(1), %ST(0)	# ST(0)/ST(1) -> ST(0)    x/ak
+	FADD	%ST(1), %ST(0)	# ST(0)+ST(1) -> ST(0)    ak+x/ak
+	FIDIVL	two		# ST(0)/two -> ST(0)      (ak+x/ak)/2
+	FCOMI	%ST(1)		# ST(1) ? ST(0)           ak ? ak+1
+	FSTP	%ST(1)		# ST(0) -> ST(1) & pop from stack
+	JNZ	iter		# test of convergence
 
-	cmp %rax, %rdi
-	jbe f_e
+	FSTPL	sqr_b		# ST(0) -> sqr_b & pop from stack
+				#------------------------------
+	FLDL	sqr_b		# load & display second result
+	CALL	disp
 
-	push %rdi
+	INCL	i		# next argument
+	CMPL	$10, i		# enough ?
+	JBE	next
+				#------------------------------
+	mov $0, %rdi		# the end
+	CALL	exit
+	
 
-	dec %rdi
-	call facta
-
-	pop %rdi
-
-	mul %rdi
-
-f_e:	ret
-
-
-
-
-
-
-
-
-
-
-----------------------------C---------------------------------
-//---------------------------------------------------------------
-// Program lab_6a - Asemblery Laboratorium IS II rok
-//
-// To compile&link: gcc -o lab_6a lab_6a.c lab_6a_asm.s
-// To run:          ./lab_6a
-//
-//---------------------------------------------------------------
-
-#include <stdio.h>
-
-long long factc( unsigned int k )
-{
-	if( k <= 1 )
-		return 1;
-	else
-		return k * factc( k - 1 );
-}
-
-long long facta( unsigned int k );
-
-void main( void )
-{
- int i;
-
- for( i = 1; i <= 30; i++ )
-   printf( "FactC(%3d) = %30ld FactA = %30ld\n", i, factc(i), facta(i) );
-}
+	.type	disp, @function	# printf( fmt_str, x, ST(0) )
+disp:
+	FSTPL 	y		# store number in memory
+	movq	x, %xmm0
+	movq	y, %xmm1
+	mov	$fmt_str, %rdi	# address of fmt_str
+	mov $2, %al
+	CALL	printf
+	RET
 </textarea>
