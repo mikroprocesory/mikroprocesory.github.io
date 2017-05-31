@@ -1,0 +1,93 @@
+<textarea style="width:2000px; height:10000px;" >
+	
+
+
+	#----------------------------------------------------------------
+# Funkcja do programu lab_6b - Asemblery Laboratorium IS II rok
+#----------------------------------------------------------------
+
+	.type fiba, @function
+	.globl fiba
+
+fiba:	push %rbp
+	mov %rsp,%rbp
+
+	sub $8,%rsp 	# przesuwamy wskaźnik na stos żeby zyskac miejsce na stosie 
+
+	cmp $0, %rdi
+	jz f_0
+
+	cmp $1, %rdi
+	jz f_1
+
+	push %rdi
+
+	sub $2,%rdi
+	call fiba
+	mov %rax,-8(%rbp)
+
+	pop %rdi
+
+	dec %rdi
+	call fiba
+	add -8(%rbp),%rax
+
+f_e:	mov %rbp,%rsp
+	pop %rbp
+	ret
+
+f_0:
+	mov $0, %rax
+	jmp f_e
+
+f_1:
+	mov $1, %rax
+	jmp f_e
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	-----------------------------_C_-----------------------------
+
+
+	//---------------------------------------------------------------
+// Program lab_6b - Asemblery Laboratorium IS II rok
+//
+// To compile&link: gcc -o lab_6b lab_6b.c lab_6b_asm.s
+// To run:          ./lab_6b
+//
+//---------------------------------------------------------------
+
+#include <stdio.h>
+
+long long fibc( unsigned int k )
+{
+	if( k == 0 )
+		return 0;
+	else if( k == 1 )
+		return 1;
+	else
+		return fibc( k - 2 ) + fibc( k - 1 );
+}
+
+long long fiba( unsigned int k );
+
+void main( void )
+{
+ int i;
+
+ for( i = 0; i <= 40; i++ )
+  	printf( "FibC( %2d ) = %5ld    FibA = %5ld\n", i, fibc( i ), fiba( i ) );
+   //printf( "FibA( %2d ) = %5ld \n", i, fiba( i ) );
+}
+</textarea>

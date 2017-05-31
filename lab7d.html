@@ -1,0 +1,41 @@
+ <textarea style="width:2000px; height:10000px;" >
+#----------------------------------------------------------------
+# Funkcja do programu lab_7b - Asemblery Laboratorium IS II rok
+#----------------------------------------------------------------
+
+	.type create_strA, @function
+	.global create_strA
+
+
+# buf  n   'a'
+#%rdi %rsi %rdx
+
+create_strA:	
+	mov %rdi, %rax
+	
+next:	
+	cmp $0, %rsi
+	jbe end
+	
+	movb %dl, (%rdi) # 8 bitow
+	inc %rdi 
+	inc %dl
+	dec %rsi
+	
+	jmp next
+	
+end:
+	movb $0, (%rdi)
+
+#	mov %rdi, %rax
+
+	ret
+
+
+
+</textarea>
+
+
+
+
+
